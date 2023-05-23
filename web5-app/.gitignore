@@ -1,0 +1,6 @@
+node_modules/
+src/data
+src/DATASTORE
+src/EVENTLOG
+src/INDEX
+src/MESSAGESTORE
