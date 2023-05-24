@@ -24,6 +24,7 @@ onBeforeMount(async () => {
   for (let record of records) {
     const data = await record.data.json();
     const todo = { record, data, id: record.id };
+    // todo変数に格納する。
     todos.value.push(todo);
   }
 });
@@ -35,6 +36,7 @@ const newTodoDescription = ref('');
  * Adding ToDos method
  */
 async function addTodo() {
+  // todo データを作成
   const todoData = {
     completed   : false,
     description : newTodoDescription.value
@@ -50,7 +52,7 @@ async function addTodo() {
       dataFormat : 'application/json'
     }
   });
-
+  // 更新後のデータを取得する。
   const data = await record.data.json();
   const todo = { record, data, id: record.id };
   todos.value.push(todo);
