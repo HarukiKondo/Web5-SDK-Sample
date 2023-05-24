@@ -42,7 +42,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: './frontend/build'
+          path: './todo-app/dist'
 
   # GitHub Pagesを使って成果物を公開する
   deploy-to-pages:
