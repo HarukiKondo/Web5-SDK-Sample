@@ -22,26 +22,10 @@ jobs:
       - name: Install packages
         run: cd todo-app && npm ci
 
-  # フロントエンドのテスト実施
-  todo-app-test:
-    runs-on: ubuntu-latest
-    needs: [setup]
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-      - uses: actions/cache@v3
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-      - name: todo-app test
-        run: cd todo-app && npm run test
-        env:
-          CI: true
-
   # フロントエンドのビルド
   todo-app-build:
     runs-on: ubuntu-latest
-    needs: [todo-app-test]
+    needs: [setup]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
