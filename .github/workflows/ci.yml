@@ -1,0 +1,70 @@
+name: CI
+
+on: [push]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  # npm モジュールのインストール
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - uses: actions/cache@v3
+        id: npm-cache
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-{{ checksum "patches.hash" }}
+      - name: Install packages
+        run: cd todo-app && npm ci
+
+  # フロントエンドのテスト実施
+  todo-app-test:
+    runs-on: ubuntu-latest
+    needs: [setup]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - uses: actions/cache@v3
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      - name: todo-app test
+        run: cd todo-app && npm run test
+        env:
+          CI: true
+
+  # フロントエンドのビルド
+  todo-app-build:
+    runs-on: ubuntu-latest
+    needs: [todo-app-test]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - uses: actions/cache@v3
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      - name: todo-app build
+        run: cd todo-app && npm run build
+        env:
+          CI: false
+          PUBLIC_URL: /Web5-SDK-Sample
+        # ビルド成果物をアップロード
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: './frontend/build'
+
+  # GitHub Pagesを使って成果物を公開する
+  deploy-to-pages:
+    runs-on: ubuntu-latest
+    needs: [todo-app-build]
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
